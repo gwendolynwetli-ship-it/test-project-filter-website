@@ -3,16 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ASCII Motion</title>
+<title>schwendis first website</title>
 <style>
   :root {
-    --bg: #111113;
-    --panel: #18181b;
-    --line: #2a2a30;
-    --text: #e8e8ea;
-    --muted: #8b8b94;
-    --accent: #39ff14;
+    --bg: #f6f4f2;
+    --panel: #fdfcfb;
+    --text: #2b2424;
+    --muted: #8f8686;
+    --line: #e8e3e0;
+    --chip: #efebe8;
+    --accent: #eb5795;
+    color-scheme: light;
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121111;
+      --panel: #1a1818;
+      --text: #ece7e4;
+      --muted: #847b7b;
+      --line: #2c2828;
+      --chip: #252222;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121111;
+    --panel: #1a1818;
+    --text: #ece7e4;
+    --muted: #847b7b;
+    --line: #2c2828;
+    --chip: #252222;
+    color-scheme: dark;
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
@@ -20,180 +43,261 @@
     color: var(--text);
     font: 13px/1.4 system-ui, -apple-system, sans-serif;
     display: grid;
-    grid-template-columns: 290px 1fr;
+    grid-template-columns: 264px 1fr;
     overflow: hidden;
+    transition: background .2s, color .2s;
   }
+  button, select, input { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; padding: 0; }
+
   aside {
     background: var(--panel);
     border-right: 1px solid var(--line);
-    padding: 18px 18px 28px;
+    padding: 22px 22px 28px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
   }
-  h1 {
-    font: 600 15px/1 ui-monospace, Menlo, monospace;
-    letter-spacing: .08em;
-    margin: 0 0 18px;
+  header { display: flex; align-items: center; justify-content: space-between; }
+  h1 { font: 600 13px/1 ui-monospace, Menlo, monospace; letter-spacing: .02em; margin: 0; }
+  #theme {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--muted);
   }
-  section { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+  #theme:hover { color: var(--text); background: var(--chip); }
+
   h2 {
     font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .1em;
+    font-weight: 500;
     color: var(--muted);
     margin: 0 0 10px;
   }
-  label { display: block; margin-bottom: 10px; }
-  label > span { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
+  #pick {
+    width: 100%;
+    padding: 16px 10px;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    color: var(--muted);
+    text-align: center;
+  }
+  #pick:hover { border-color: var(--muted); color: var(--text); }
+
+  [data-chips] { display: flex; flex-wrap: wrap; gap: 6px; }
+  [data-chips] button {
+    padding: 5px 10px;
+    border-radius: 99px;
+    background: var(--chip);
+    color: var(--muted);
+  }
+  [data-chips] button:hover { color: var(--text); }
+  [data-chips] button[data-on] { background: var(--text); color: var(--panel); }
+
+  label { display: block; }
+  label + label { margin-top: 12px; }
+  label > span { display: flex; justify-content: space-between; margin-bottom: 6px; }
   label output { color: var(--muted); font-variant-numeric: tabular-nums; }
-  input[type=range] { width: 100%; accent-color: var(--accent); }
-  input[type=checkbox] { accent-color: var(--accent); margin-right: 6px; }
-  select, input[type=text], button {
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    background: #222227;
-    color: var(--text);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 7px 9px;
-    font: inherit;
+    height: 14px;
+    background: transparent;
+    margin: 0;
   }
-  button { cursor: pointer; }
-  button:hover { border-color: #44444c; background: #2a2a30; }
-  input[type=text] { font-family: ui-monospace, Menlo, monospace; margin-top: 6px; }
-  [data-row] { display: flex; gap: 8px; }
-  [data-row] > * { flex: 1; }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); border-radius: 2px; }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--line); border-radius: 2px; }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    margin-top: -5px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 0;
+  }
+  input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--text); border: 0; }
+
+  [data-swatches] { display: flex; align-items: center; gap: 7px; }
+  [data-swatches] button, input[type=color] {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+  }
+  [data-swatches] button[data-on] { outline: 1.5px solid var(--text); outline-offset: 2px; }
   input[type=color] {
-    width: 100%;
-    height: 34px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: none;
-    padding: 2px;
-    cursor: pointer;
-  }
-  #swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 10px 0; }
-  #swatches button {
-    height: 26px;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
     padding: 0;
-    border-radius: 5px;
+    cursor: pointer;
+    background: conic-gradient(#eb5795, #e84b1e, #bcbcbb, #acc4e5, #4f6150, #eb5795);
   }
-  #rec[data-on] { border-color: #ff4d4d; color: #ff6b6b; }
-  [data-hint] { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type=color]::-webkit-color-swatch { border: 0; border-radius: 50%; opacity: 0; }
+  input[type=color]::-moz-color-swatch { border: 0; border-radius: 50%; opacity: 0; }
+  [data-swatches] + h2 { margin-top: 16px; }
+
+  [data-toggle] { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+  [data-toggle] input { accent-color: var(--text); margin: 0; }
+
+  select {
+    width: 100%;
+    background: var(--chip);
+    border: 0;
+    border-radius: 8px;
+    padding: 7px 9px;
+    margin-bottom: 12px;
+  }
+
+  details summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    list-style: none;
+  }
+  details summary::before { content: '+ '; }
+  details[open] summary::before { content: '– '; }
+  details[open] summary { margin-bottom: 12px; }
+
+  footer { margin-top: auto; display: flex; gap: 8px; }
+  footer button {
+    flex: 1;
+    padding: 9px 0;
+    border-radius: 8px;
+    background: var(--chip);
+  }
+  footer button:hover { background: var(--line); }
+  #rec[data-on] { background: var(--accent); color: #fff; }
+
   main {
     position: relative;
     display: grid;
     place-items: center;
-    padding: 24px;
     overflow: hidden;
   }
-  canvas { display: block; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+  canvas { display: block; border-radius: 4px; }
+  #play {
+    position: absolute;
+    bottom: 18px; right: 18px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+    display: grid; place-items: center;
+  }
   #drop {
     position: absolute;
-    inset: 12px;
-    border: 2px dashed var(--accent);
-    border-radius: 12px;
+    inset: 14px;
+    border: 1.5px dashed var(--text);
+    border-radius: 14px;
     display: grid;
     place-items: center;
-    font: 600 18px ui-monospace, Menlo, monospace;
-    color: var(--accent);
-    background: rgba(0,0,0,.6);
+    color: var(--text);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
     opacity: 0;
     pointer-events: none;
     transition: opacity .15s;
   }
   body[data-drag] #drop { opacity: 1; }
+  #status {
+    position: absolute;
+    bottom: 18px; left: 18px;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: var(--panel);
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  }
+  #status:empty { display: none; }
+
   @media (max-width: 760px) {
     body { grid-template-columns: 1fr; grid-template-rows: 55vh auto; overflow: auto; }
-    main { grid-row: 1; padding: 16px; }
-    aside { grid-row: 2; border-right: 0; border-top: 1px solid var(--line); }
+    main { grid-row: 1; }
+    aside { grid-row: 2; border-right: 0; border-top: 1px solid var(--line); padding: 20px 16px; }
   }
 </style>
 </head>
 <body>
 <aside>
-  <h1>ASCII MOTION</h1>
+  <header>
+    <h1>schwendis first website</h1>
+    <button id="theme" title="Toggle light / dark" aria-label="Toggle light / dark">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.25"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg>
+    </button>
+  </header>
 
-  <section>
-    <h2>Image</h2>
-    <button id="pick">Choose image…</button>
+  <div>
+    <button id="pick">Drop, paste or choose an image</button>
     <input id="file" type="file" accept="image/*" hidden>
-    <p data-hint>Or drop / paste an image anywhere.</p>
-  </section>
+    <label data-toggle>Remove background <input id="removeBg" type="checkbox" checked></label>
+  </div>
 
-  <section>
+  <div>
+    <h2>Motion</h2>
+    <div data-chips id="modes"></div>
+    <div style="margin-top:16px">
+      <label><span>Speed <output id="speedOut"></output></span>
+        <input id="speed" type="range" min="0" max="3" step="0.05" value="1"></label>
+      <label><span>Amount <output id="amountOut"></output></span>
+        <input id="amount" type="range" min="0" max="1" step="0.01" value="0.35"></label>
+      <label><span>Scale <output id="scaleOut"></output></span>
+        <input id="scale" type="range" min="0.1" max="3" step="0.05" value="1"></label>
+      <label><span>3D spin <output id="spinOut"></output></span>
+        <input id="spin" type="range" min="0" max="2" step="0.05" value="1"></label>
+    </div>
+  </div>
+
+  <div>
+    <h2>Background</h2>
+    <div data-swatches id="bgSwatches"><input id="c1" type="color" value="#e84b1e" title="Custom"></div>
+    <h2>Glyphs</h2>
+    <div data-swatches id="fgSwatches"><input id="c2" type="color" value="#bcbcbb" title="Custom"></div>
+    <label data-toggle>Tonal fade <input id="tonal" type="checkbox" checked></label>
+  </div>
+
+  <div>
     <h2>Characters</h2>
-    <label>
-      <select id="charset">
-        <option value=" .:-=+*#%@">Standard</option>
-        <option value=" .'`^,:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$">Detailed</option>
-        <option value=" ░▒▓█">Blocks</option>
-        <option value=" ·•●">Dots</option>
-        <option value=" 01">Binary</option>
-        <option value=" ｱｲｳｴｵｶｷｸｹｺ">Katakana</option>
-        <option value="custom">Custom…</option>
-      </select>
-      <input id="custom" type="text" value=" .oO@" hidden placeholder="dark → light">
-    </label>
+    <select id="charset">
+      <option value="pixel">Pixel</option>
+      <option value=" .:-=+*#%@">Standard</option>
+      <option value=" .'`^,:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$">Detailed</option>
+      <option value=" ░▒▓█">Blocks</option>
+      <option value=" ·•●">Dots</option>
+      <option value=" 01">Binary</option>
+      <option value=" ｱｲｳｴｵｶｷｸｹｺ">Katakana</option>
+      <option value="custom">Custom…</option>
+    </select>
+    <input id="custom" type="text" value=" .oO@" hidden placeholder="dark → light"
+      style="width:100%;margin:-4px 0 12px;padding:7px 9px;border:0;border-radius:8px;background:var(--chip);font-family:ui-monospace,Menlo,monospace">
     <label><span>Cell size <output id="cellOut"></output></span>
-      <input id="cell" type="range" min="5" max="36" value="12"></label>
-  </section>
+      <input id="cell" type="range" min="5" max="36" value="5"></label>
+  </div>
 
-  <section>
-    <h2>Tone</h2>
+  <details>
+    <summary>Adjust image</summary>
     <label><span>Contrast <output id="contrastOut"></output></span>
       <input id="contrast" type="range" min="0.5" max="3" step="0.05" value="1.3"></label>
     <label><span>Exposure <output id="exposureOut"></output></span>
       <input id="exposure" type="range" min="-0.5" max="0.5" step="0.01" value="0"></label>
-    <label><input id="invert" type="checkbox">Invert</label>
-  </section>
+    <label data-toggle>Invert <input id="invert" type="checkbox"></label>
+  </details>
 
-  <section>
-    <h2>Colors</h2>
-    <div data-row>
-      <label><span>Background</span><input id="c1" type="color" value="#0b0b0b"></label>
-      <label><span>Glyphs</span><input id="c2" type="color" value="#39ff14"></label>
-    </div>
-    <div id="swatches"></div>
-    <div data-row>
-      <button id="swap">Swap</button>
-    </div>
-    <label style="margin-top:10px"><input id="tonal" type="checkbox" checked>Tonal glyphs (fade into background)</label>
-  </section>
-
-  <section>
-    <h2>Animation</h2>
-    <label>
-      <select id="mode">
-        <option value="wave">Wave</option>
-        <option value="liquid">Liquid</option>
-        <option value="ripple">Ripple</option>
-        <option value="scan">Scan line</option>
-        <option value="glitch">Glitch</option>
-        <option value="scramble">Scramble</option>
-        <option value="rain">Rain</option>
-        <option value="none">None</option>
-      </select>
-    </label>
-    <label><span>Speed <output id="speedOut"></output></span>
-      <input id="speed" type="range" min="0" max="3" step="0.05" value="1"></label>
-    <label><span>Amount <output id="amountOut"></output></span>
-      <input id="amount" type="range" min="0" max="1" step="0.01" value="0.5"></label>
-    <label><span>Scale <output id="scaleOut"></output></span>
-      <input id="scale" type="range" min="0.1" max="3" step="0.05" value="1"></label>
-    <button id="pause">Pause (space)</button>
-  </section>
-
-  <section>
-    <h2>Export</h2>
-    <div data-row>
-      <button id="png">Save PNG</button>
-      <button id="rec">Record video</button>
-    </div>
-  </section>
+  <footer>
+    <button id="png">Save PNG</button>
+    <button id="rec">Record</button>
+  </footer>
 </aside>
 
 <main id="stage">
   <canvas id="out"></canvas>
+  <button id="play" title="Pause (space)" aria-label="Pause"></button>
+  <div id="status"></div>
   <div id="drop">Drop image</div>
 </main>
 
@@ -204,20 +308,39 @@ const ctx = canvas.getContext('2d');
 const sampler = document.createElement('canvas');
 const sctx = sampler.getContext('2d', { willReadFrequently: true });
 
-const PAIRS = [
-  ['#0b0b0b', '#39ff14'], ['#101820', '#fee715'], ['#1a0033', '#ff3df2'],
-  ['#f4efe6', '#1d1d1b'], ['#001f3f', '#7fdbff'], ['#2b0a0a', '#ff6b35'],
-];
+const COLORS = ['#4f6150', '#eb5795', '#acc4e5', '#513f3f', '#e84b1e', '#bcbcbb'];
+const MODES = {
+  wave: 'Wave', liquid: 'Liquid', ripple: 'Ripple', scan: 'Scan',
+  glitch: 'Glitch', scramble: 'Scramble', rain: 'Rain', none: 'Still',
+};
+const ICON_PAUSE = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="1" width="3" height="10" rx="1"/><rect x="7" y="1" width="3" height="10" rx="1"/></svg>';
+const ICON_PLAY = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg>';
 
 let source = null;          // image or canvas being converted
+let isCutout = false;       // source has its background removed
+let mode = 'none';
+let alpha = new Float32Array(0);
+let tiles = [];
 let cols = 0, rows = 0, cellW = 0, cellH = 0;
 let lum = new Float32Array(0);
 let palette = [];
-let paused = false, time = 0, last = performance.now();
+let paused = false, time = 0, angle = 0, last = performance.now();
+const SPIN_DIST = 2.6;      // camera distance, in half card widths
+const SPIN_FIT = 0.86;      // shrink so the turning card stays inside the frame
+
+// ---------- Theme ----------
+
+const root = document.documentElement;
+try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t; } catch {}
+$('theme').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+};
 
 // ---------- Settings ----------
 
-const sliders = ['cell', 'contrast', 'exposure', 'speed', 'amount', 'scale'];
+const sliders = ['cell', 'contrast', 'exposure', 'speed', 'amount', 'scale', 'spin'];
 const val = id => parseFloat($(id).value);
 
 function glyphs() {
@@ -237,7 +360,10 @@ function buildPalette() {
     const t = $('tonal').checked ? 0.15 + 0.85 * (i / 31) : 1;
     palette.push(`rgb(${mix(a[0], b[0], t)},${mix(a[1], b[1], t)},${mix(a[2], b[2], t)})`);
   }
+  buildTiles();
+  markSwatches();
 }
+const isPixel = () => $('charset').value === 'pixel';
 const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 const mix = (a, b, t) => Math.round(a + (b - a) * t);
 
@@ -246,7 +372,7 @@ const mix = (a, b, t) => Math.round(a + (b - a) * t);
 function layout() {
   if (!source) return;
   const box = $('stage').getBoundingClientRect();
-  const pad = innerWidth < 760 ? 32 : 48;
+  const pad = innerWidth < 760 ? 32 : 64;
   const aw = box.width - pad, ah = box.height - pad;
   const ar = source.width / source.height;
   let w = aw, h = aw / ar;
@@ -259,11 +385,41 @@ function layout() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const size = val('cell');
-  cols = Math.max(4, Math.round(w / (size * 0.6)));
+  ctx.imageSmoothingEnabled = false;
+  cols = Math.max(4, Math.round(w / (size * (isPixel() ? 1 : 0.6))));
   rows = Math.max(4, Math.round(h / size));
   cellW = w / cols;
   cellH = h / rows;
+  buildTiles();
   sample();
+}
+
+// square tiles for the pixel style: solid, stripes, dots
+function buildTiles() {
+  if (!cellW) return;
+  const S = Math.max(2, Math.ceil(cellW * (devicePixelRatio || 1)));
+  const main = $('c2').value;
+  const c = hex(main);
+  const light = `rgb(${mix(c[0], 255, 0.85)},${mix(c[1], 255, 0.85)},${mix(c[2], 255, 0.85)})`;
+  const tile = draw => {
+    const t = document.createElement('canvas');
+    t.width = t.height = S;
+    const x = t.getContext('2d');
+    x.fillStyle = main;
+    x.fillRect(0, 0, S, S);
+    x.fillStyle = light;
+    draw(x);
+    return t;
+  };
+  const line = Math.max(1, Math.round(S * 0.09));
+  const dot = Math.max(1, Math.round(S * 0.14));
+  tiles = [null, tile(() => {}),
+    tile(x => { for (let i = 0; i < 4; i++) x.fillRect(Math.round(S * (0.14 + i * 0.22)), 0, line, S); }),
+    tile(x => {
+      for (const a of [0.2, 0.5, 0.8]) for (const b of [0.2, 0.5, 0.8])
+        x.fillRect(Math.round(S * a - dot / 2), Math.round(S * b - dot / 2), dot, dot);
+    }),
+  ];
 }
 
 function sample() {
@@ -272,14 +428,39 @@ function sample() {
   sctx.drawImage(source, 0, 0, cols, rows);
   const px = sctx.getImageData(0, 0, cols, rows).data;
   const c = val('contrast'), e = val('exposure'), inv = $('invert').checked;
+  const raw = new Float32Array(cols * rows);
+  alpha = new Float32Array(cols * rows);
+  const visible = [];
+  for (let i = 0; i < raw.length; i++) {
+    raw[i] = (0.2126 * px[i * 4] + 0.7152 * px[i * 4 + 1] + 0.0722 * px[i * 4 + 2]) / 255;
+    alpha[i] = px[i * 4 + 3] / 255;
+    if (alpha[i] > 0.08) visible.push(raw[i]);
+  }
+
+  // stretch the subject's tones over the full character range
+  visible.sort((a, b) => a - b);
+  let lo = 0, hi = 1;
+  if (visible.length > 10) {
+    lo = visible[Math.floor(visible.length * 0.02)];
+    hi = visible[Math.floor(visible.length * 0.98)];
+    if (hi - lo < 0.05) { lo = 0; hi = 1; }
+  }
+
+  // -1 marks empty background
   lum = new Float32Array(cols * rows);
   for (let i = 0; i < lum.length; i++) {
-    const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2], a = px[i * 4 + 3] / 255;
-    let l = ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255) * a;
+    if (alpha[i] <= 0.08) { lum[i] = -1; continue; }
+    let l = (raw[i] - lo) / (hi - lo);
     l = (l - 0.5) * c + 0.5 + e;
     l = Math.min(1, Math.max(0, l));
-    lum[i] = inv ? 1 - l : l;
+    lum[i] = (inv ? 1 - l : l) * alpha[i];
   }
+}
+
+function alphaAt(x, y) {
+  x = Math.min(cols - 1, Math.max(0, Math.round(x)));
+  y = Math.min(rows - 1, Math.max(0, Math.round(y)));
+  return alpha[y * cols + x];
 }
 
 function lumAt(x, y) {
@@ -294,7 +475,8 @@ const rand = (a, b) => { const n = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
 
 function render() {
   const now = performance.now();
-  if (!paused) time += ((now - last) / 1000) * val('speed');
+  const dt = (now - last) / 1000;
+  if (!paused) { time += dt * val('speed'); angle += dt * val('spin'); }
   last = now;
 
   const w = cols * cellW, h = rows * cellH;
@@ -302,11 +484,13 @@ function render() {
   ctx.fillRect(0, 0, w, h);
   if (!lum.length) return requestAnimationFrame(render);
 
+  const pixel = isPixel();
   const g = glyphs(), n = g.length - 1;
-  const mode = $('mode').value, amt = val('amount'), sc = val('scale'), t = time;
+  const amt = val('amount'), sc = val('scale'), t = time;
   const cx = cols / 2, cy = rows / 2;
   const step = Math.floor(t * 10);
   const band = ((t * 0.25) % 1.4 - 0.2) * rows;
+  const spin = val('spin') > 0, cs = Math.cos(angle), sn = Math.sin(angle);
 
   ctx.font = `${cellH * 1.05}px ui-monospace, Menlo, monospace`;
   ctx.textAlign = 'center';
@@ -323,6 +507,22 @@ function render() {
 
     for (let x = 0; x < cols; x++) {
       let sx = x, sy = y, boost = 0, scramble = false;
+
+      if (spin) {
+        // the image is a card turning around its vertical axis, seen in perspective:
+        // find which point (u, v) on the card lands on this screen cell
+        const X = (x + 0.5 - cols / 2) / (cols / 2) / SPIN_FIT;
+        const Y = (y + 0.5 - rows / 2) / (rows / 2) / SPIN_FIT;
+        const den = cs * SPIN_DIST - X * sn;
+        if (Math.abs(den) < 1e-4) continue;
+        const u = X * SPIN_DIST / den;
+        const z = SPIN_DIST + u * sn;
+        if (u < -1 || u > 1 || z <= 0) continue;
+        const v = Y * z / SPIN_DIST;
+        if (v < -1 || v > 1) continue;
+        sx = (u + 1) * cols / 2 - 0.5;
+        sy = (v + 1) * rows / 2 - 0.5;
+      }
 
       switch (mode) {
         case 'wave':
@@ -364,28 +564,116 @@ function render() {
         }
       }
 
-      let l = lumAt(sx, sy) + boost;
+      let l = lumAt(sx, sy);
+      if (l < 0) continue;
+      l += boost;
       l = l < 0 ? 0 : l > 1 ? 1 : l;
-      let gi = Math.round(l * n);
+      if (pixel) {
+        // a cut-out subject keeps its full silhouette, even in the darkest parts
+        let k = l < 0.1 && !isCutout ? 0 : l < 0.62 ? 1 : l < 0.82 ? 2 : 3;
+        if (scramble) k = 1 + Math.floor(rand(x * 3.1, y + step) * 3);
+        if (!k) continue;
+        const a = alphaAt(sx, sy);
+        ctx.globalAlpha = a < 0.9 ? Math.max(0.35, a) : 1;
+        const px0 = Math.round(x * cellW), py0 = Math.round(y * cellH);
+        ctx.drawImage(tiles[k], px0, py0, Math.round((x + 1) * cellW) - px0, Math.round((y + 1) * cellH) - py0);
+        continue;
+      }
+
+      let gi = isCutout ? 1 + Math.round(l * (n - 1)) : Math.round(l * n);
       if (scramble) gi = 1 + Math.floor(rand(x * 3.1, y + step) * n);
       if (gi <= 0 || g[gi] === ' ') continue;
 
-      const ci = Math.round(l * 31);
+      const ci = isCutout ? 8 + Math.round(l * 23) : Math.round(l * 31);
       if (ci !== lastColor) { ctx.fillStyle = palette[ci]; lastColor = ci; }
       ctx.fillText(g[gi], (x + 0.5) * cellW, (y + 0.5) * cellH);
     }
   }
+  ctx.globalAlpha = 1;
   requestAnimationFrame(render);
 }
 
 // ---------- Image loading ----------
 
-function loadFile(file) {
+const BG_LIB = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm';
+let bgLib = null;
+let original = null, cutout = null;
+
+function loadImage(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function status(text) {
+  $('status').textContent = text;
+}
+
+async function loadFile(file) {
   if (!file || !file.type.startsWith('image/')) return;
-  const url = URL.createObjectURL(file);
-  const img = new Image();
-  img.onload = () => { source = img; layout(); URL.revokeObjectURL(url); };
-  img.src = url;
+  original = { file, img: await loadImage(file) };
+  cutout = null;
+  applySource();
+}
+
+async function applySource() {
+  if (!original) return;
+  if (!$('removeBg').checked) { setSource(original.img, false); return; }
+
+  if (!cutout) {
+    const job = original;
+    setSource(job.img, false);
+    status('Removing background… the first time takes a moment');
+    try {
+      const { removeBackground } = await (bgLib ||= import(BG_LIB));
+      const blob = await removeBackground(job.file, { output: { format: 'image/png' } });
+      if (job !== original) return;
+      cutout = await loadImage(blob);
+      status('');
+    } catch (err) {
+      console.error(err);
+      status('Background removal failed – showing the original');
+      setTimeout(() => status(''), 4000);
+      return;
+    }
+  }
+  setSource(cropToSubject(cutout), true);
+}
+
+function setSource(img, cut) {
+  source = img;
+  isCutout = cut;
+  layout();
+}
+
+// crop to the visible subject so it fills the frame
+function cropToSubject(img) {
+  const k = Math.min(1, 400 / Math.max(img.width, img.height));
+  const w = Math.round(img.width * k), h = Math.round(img.height * k);
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  x.drawImage(img, 0, 0, w, h);
+  const a = x.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) {
+    if (a[(y * w + i) * 4 + 3] > 25) {
+      if (i < x0) x0 = i; if (i > x1) x1 = i;
+      if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+  }
+  if (x1 < 0) return img;
+  const pad = Math.max(x1 - x0, y1 - y0) * 0.06;
+  const sx = Math.max(0, (x0 - pad) / k), sy = Math.max(0, (y0 - pad) / k);
+  const sw = Math.min(img.width, (x1 + pad) / k) - sx, sh = Math.min(img.height, (y1 + pad) / k) - sy;
+  const out = document.createElement('canvas');
+  out.width = Math.round(sw); out.height = Math.round(sh);
+  out.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, out.width, out.height);
+  return out;
 }
 
 function demoImage() {
@@ -433,27 +721,50 @@ for (const id of sliders) $(id).addEventListener('input', () => {
   else if (id === 'contrast' || id === 'exposure') source && sample();
 });
 $('invert').onchange = () => source && sample();
-$('charset').onchange = () => { $('custom').hidden = $('charset').value !== 'custom'; };
+$('removeBg').onchange = applySource;
+$('charset').onchange = () => { $('custom').hidden = $('charset').value !== 'custom'; layout(); };
+$('custom').addEventListener('input', () => source && sample());
 for (const id of ['c1', 'c2', 'tonal']) $(id).addEventListener('input', buildPalette);
 
-$('swap').onclick = () => {
-  [$('c1').value, $('c2').value] = [$('c2').value, $('c1').value];
-  buildPalette();
-};
-
-for (const [a, b] of PAIRS) {
+for (const [key, name] of Object.entries(MODES)) {
   const btn = document.createElement('button');
-  btn.style.background = `linear-gradient(135deg, ${a} 50%, ${b} 50%)`;
-  btn.title = `${a} / ${b}`;
-  btn.onclick = () => { $('c1').value = a; $('c2').value = b; buildPalette(); };
-  $('swatches').append(btn);
+  btn.textContent = name;
+  btn.dataset.mode = key;
+  btn.onclick = () => { mode = key; markModes(); };
+  $('modes').append(btn);
+}
+function markModes() {
+  for (const b of $('modes').children) b.toggleAttribute('data-on', b.dataset.mode === mode);
+}
+
+for (const [row, input] of [['bgSwatches', 'c1'], ['fgSwatches', 'c2']]) {
+  for (const color of COLORS) {
+    const btn = document.createElement('button');
+    btn.style.background = color;
+    btn.dataset.color = color;
+    btn.title = color;
+    btn.onclick = () => { $(input).value = color; buildPalette(); };
+    $(row).insertBefore(btn, $(input));
+  }
+}
+function markSwatches() {
+  for (const [row, input] of [['bgSwatches', 'c1'], ['fgSwatches', 'c2']]) {
+    const v = $(input).value.toLowerCase();
+    for (const b of $(row).querySelectorAll('button')) b.toggleAttribute('data-on', b.dataset.color === v);
+    // a custom pick shows its own color on the picker dot
+    const custom = !COLORS.includes(v);
+    $(input).style.background = custom ? v : '';
+    $(input).style.outline = custom ? '1.5px solid var(--text)' : '';
+    $(input).style.outlineOffset = '2px';
+  }
 }
 
 function togglePause() {
   paused = !paused;
-  $('pause').textContent = paused ? 'Play (space)' : 'Pause (space)';
+  $('play').innerHTML = paused ? ICON_PLAY : ICON_PAUSE;
+  $('play').title = paused ? 'Play (space)' : 'Pause (space)';
 }
-$('pause').onclick = togglePause;
+$('play').onclick = togglePause;
 addEventListener('keydown', e => {
   if (e.code === 'Space' && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) {
     e.preventDefault();
@@ -481,18 +792,20 @@ $('rec').onclick = () => {
   recorder.onstop = () => {
     download(new Blob(chunks, { type }), type.includes('mp4') ? 'ascii.mp4' : 'ascii.webm');
     recorder = null;
-    $('rec').textContent = 'Record video';
+    $('rec').textContent = 'Record';
     delete $('rec').dataset.on;
   };
   recorder.start();
-  $('rec').textContent = '■ Stop recording';
+  $('rec').textContent = '■ Stop';
   $('rec').dataset.on = '';
 };
 
 // ---------- Start ----------
 
 new ResizeObserver(layout).observe($('stage'));
+$('play').innerHTML = ICON_PAUSE;
 updateOutputs();
+markModes();
 buildPalette();
 source = demoImage();
 layout();
